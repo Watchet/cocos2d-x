@@ -36,8 +36,6 @@ namespace timeline{
 
 
 static const char* ClassName_Node     = "Node";
-static const char* ClassName_Canvas   = "Canvas";
-static const char* ClassName_Scene    = "Scene";
 static const char* ClassName_SubGraph = "SubGraph";
 static const char* ClassName_Sprite   = "Sprite";
 static const char* ClassName_Particle = "Particle";
@@ -68,7 +66,6 @@ static const char* OPTIONS     = "options";
 
 static const char* X                = "x";
 static const char* Y                = "y";
-static const char* POSITION         = "position";
 static const char* SCALE_X          = "scaleX";
 static const char* SCALE_Y          = "scaleY";
 static const char* SKEW_X           = "skewX";
@@ -126,8 +123,6 @@ void NodeCache::init()
     using namespace std::placeholders;
 
     _funcs.insert(Pair(ClassName_Node,      std::bind(&NodeCache::loadSimpleNode, this, _1)));
-    _funcs.insert(Pair(ClassName_Canvas,    std::bind(&NodeCache::loadSimpleNode, this, _1)));
-    _funcs.insert(Pair(ClassName_Scene,     std::bind(&NodeCache::loadSimpleNode, this, _1)));
     _funcs.insert(Pair(ClassName_SubGraph,  std::bind(&NodeCache::loadSubGraph,   this, _1)));
     _funcs.insert(Pair(ClassName_Sprite,    std::bind(&NodeCache::loadSprite,     this, _1)));
     _funcs.insert(Pair(ClassName_Particle,  std::bind(&NodeCache::loadParticle,   this, _1)));
@@ -184,6 +179,7 @@ cocos2d::Node* NodeCache::loadNodeWithContent(const std::string& content)
         CCLOG("GetParseError %s\n", doc.GetParseError());
     }
 
+    const rapidjson::Value& subJson = DICTOOL->getSubDictionary_json(doc, NODE);
     return loadNode(doc);
 }
 
@@ -196,6 +192,7 @@ cocos2d::Node* NodeCache::loadNode(const rapidjson::Value& json)
     NodeCreateFunc func = _funcs.at(nodeType);
     if (func != nullptr)
     {
+        const rapidjson::Value& options = DICTOOL->getSubDictionary_json(json, OPTIONS);
         node = func(json);
     }
 
@@ -216,7 +213,8 @@ cocos2d::Node* NodeCache::loadNode(const rapidjson::Value& json)
 
 void NodeCache::initNode(cocos2d::Node* node, const rapidjson::Value& json)
 {
-    Vector2 position      = DICTOOL->getPointValue_json(json, POSITION, Vector2());
+    float x             = DICTOOL->getFloatValue_json(json, X);
+    float y             = DICTOOL->getFloatValue_json(json, Y);
     float scalex        = DICTOOL->getFloatValue_json(json, SCALE_X, 1);
     float scaley        = DICTOOL->getFloatValue_json(json, SCALE_Y, 1);
     float rotation      = DICTOOL->getFloatValue_json(json, ROTATION);
@@ -231,8 +229,8 @@ void NodeCache::initNode(cocos2d::Node* node, const rapidjson::Value& json)
     GLubyte green       = (GLubyte)DICTOOL->getIntValue_json(json, GREEN, 255);
     GLubyte blue        = (GLubyte)DICTOOL->getIntValue_json(json, BLUE, 255);
 
-    if(position.x != 0 || position.y != 0)
-        node->setPosition(position);
+    if(x != 0 || y != 0)
+        node->setPosition(x, y);
     if(scalex != 1)
         node->setScaleX(scalex);
     if(scaley != 1)
