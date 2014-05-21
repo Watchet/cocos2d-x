@@ -180,34 +180,42 @@ cocos2d::Node* NodeCache::loadNodeWithContent(const std::string& content)
     }
 
     const rapidjson::Value& subJson = DICTOOL->getSubDictionary_json(doc, NODE);
-    return loadNode(doc);
+    return loadNode(subJson);
 }
 
 cocos2d::Node* NodeCache::loadNode(const rapidjson::Value& json)
 {
     cocos2d::Node* node = nullptr;
-
     std::string nodeType = DICTOOL->getStringValue_json(json, CLASSNAME);
 
     NodeCreateFunc func = _funcs.at(nodeType);
     if (func != nullptr)
     {
         const rapidjson::Value& options = DICTOOL->getSubDictionary_json(json, OPTIONS);
-        node = func(json);
+        node = func(options);
     }
-
-    int tag = DICTOOL->getIntValue_json(json, ACTION_TAG);
-    node->setTag(tag);
-
-    int length = DICTOOL->getArrayCount_json(json, CHILDREN, 0);
-    for (int i = 0; i<length; i++)
+    
+    if(node)
     {
-        const rapidjson::Value &dic = DICTOOL->getSubDictionary_json(json, CHILDREN, i);
-        cocos2d::Node* child = loadNode(dic);
-        node->addChild(child);
-        locateNodeWithMulresPosition(child, dic);
+        int tag = DICTOOL->getIntValue_json(json, ACTION_TAG);
+        node->setTag(tag);
+        
+        int length = DICTOOL->getArrayCount_json(json, CHILDREN, 0);
+        for (int i = 0; i<length; i++)
+        {
+            const rapidjson::Value &dic = DICTOOL->getSubDictionary_json(json, CHILDREN, i);
+            cocos2d::Node* child = loadNode(dic);
+            if (child) {
+                node->addChild(child);
+                locateNodeWithMulresPosition(child, dic);
+            }
+        }
     }
-
+    else
+    {
+        CCLOG("Not supported NodeType: %s", nodeType.c_str());
+    }
+    
     return node;
 }
 
