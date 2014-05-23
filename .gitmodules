@@ -11,5 +11,5 @@
         path = tests/cpp-tests/Resources/ccs-res
         url = git://github.com/dumganhar/ccs-res.git
 [submodule "external"]
-        path = external
-        url = https://github.com/darkdukey/cocos2d-x-external.git
+	path = external
+	url = https://github.com/darkdukey/cocos2d-x-external.git
