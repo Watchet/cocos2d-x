@@ -254,7 +254,7 @@ void NodeCache::initNode(cocos2d::Node* node, const rapidjson::Value& json)
     if(skewy != 0)
         node->setSkewY(skewy);
     if(anchorx != 0.5f || anchory != 0.5f)
-        node->setAnchorPoint(Vector2(anchorx, anchory));
+        node->setAnchorPoint(Vec2(anchorx, anchory));
     if(alpha != 255)
         node->setOpacity(alpha); node->setCascadeOpacityEnabled(true);
     if(red != 255 || green != 255 || blue != 255)
@@ -266,14 +266,14 @@ void NodeCache::locateNodeWithMulresPosition(cocos2d::Node *node, const rapidjso
     const rapidjson::Value& mulInfo = DICTOOL->getSubDictionary_json(json, MULRESPOSITION);
     int positionType = DICTOOL->getIntValue_json(mulInfo, POSITIONTYPE);
     
-    Vector2 absPos;
+    Vec2 absPos;
     switch (positionType)
     {
         case 0: //absolute
         {
             float x = DICTOOL->getFloatValue_json(mulInfo, MUL_POSITIONX);
             float y = DICTOOL->getFloatValue_json(mulInfo, MUL_POSITIONY);
-            node->setPosition(Vector2(x, y));
+            node->setPosition(Vec2(x, y));
             break;
         }
         case 1: //relative
@@ -287,7 +287,7 @@ void NodeCache::locateNodeWithMulresPosition(cocos2d::Node *node, const rapidjso
             
             Size layoutSize = parent->getContentSize();
             Size cs = node->getContentSize();
-            Vector2 ap = node->getAnchorPoint();
+            Vec2 ap = node->getAnchorPoint();
             float finalPosX = 0.0f;
             float finalPosY = 0.0f;
             cocos2d::ui::RelativeLayoutParameter::RelativeAlign align = (cocos2d::ui::RelativeLayoutParameter::RelativeAlign)DICTOOL->getIntValue_json(mulInfo, MUL_RELATIVEALIGN);
@@ -350,7 +350,7 @@ void NodeCache::locateNodeWithMulresPosition(cocos2d::Node *node, const rapidjso
                 default:
                     break;
             }
-            node->setPosition(Vector2(finalPosX, finalPosY));
+            node->setPosition(Vec2(finalPosX, finalPosY));
             break;
         }
         case 2: //percentage
@@ -365,7 +365,7 @@ void NodeCache::locateNodeWithMulresPosition(cocos2d::Node *node, const rapidjso
             float percentageX = DICTOOL->getFloatValue_json(percentage, MUL_POSITIONPERCENTAGEX);
             float percentageY = DICTOOL->getFloatValue_json(percentage, MUL_POSITIONPERCENTAGEY);
             Size pSize = parent->getContentSize();
-            node->setPosition(Vector2(pSize.width * percentageX, pSize.height * percentageY));
+            node->setPosition(Vec2(pSize.width * percentageX, pSize.height * percentageY));
             break;
         }
         default:
