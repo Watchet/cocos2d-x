@@ -60,6 +60,7 @@ static const char* NODE        = "nodeTree";
 static const char* CHILDREN    = "children";
 static const char* CLASSNAME   = "classname";
 static const char* FILE_PATH   = "filePath";
+static const char* PLIST_FILE  = "plistFile";
 static const char* ACTION_TAG  = "actionTag";
 
 static const char* OPTIONS     = "options";
@@ -79,6 +80,7 @@ static const char* ALPHA            = "opacity";
 static const char* RED              = "colorR";
 static const char* GREEN            = "colorG";
 static const char* BLUE             = "colorB";
+static const char* PARTICLE_NUM     = "particleNum";
     
 static const char* MULRESPOSITION              = "mulResPosition";
 static const char* POSITIONTYPE                = "positionType";
@@ -426,7 +428,15 @@ Node* NodeCache::loadSprite(const rapidjson::Value& json)
 
 Node* NodeCache::loadParticle(const rapidjson::Value& json)
 {
-    return nullptr;
+    const char* filePath = DICTOOL->getStringValue_json(json, PLIST_FILE);
+    int num = DICTOOL->getIntValue_json(json, PARTICLE_NUM);
+
+    ParticleSystemQuad* particle = ParticleSystemQuad::create(filePath);
+    particle->setTotalParticles(num);
+
+    initNode(particle, json);
+
+    return particle;
 }
 
 cocos2d::Node* NodeCache::loadWidget(const rapidjson::Value& json)
