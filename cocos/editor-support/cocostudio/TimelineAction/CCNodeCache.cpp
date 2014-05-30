@@ -40,6 +40,7 @@ static const char* ClassName_SubGraph = "SubGraph";
 static const char* ClassName_Sprite   = "Sprite";
 static const char* ClassName_Particle = "Particle";
 
+static const char* ClassName_Panel     = "Panel";
 static const char* ClassName_Button     = "Button";
 static const char* ClassName_CheckBox   = "CheckBox";
 static const char* ClassName_ImageView  = "ImageView";
@@ -130,6 +131,7 @@ void NodeCache::init()
     _funcs.insert(Pair(ClassName_Sprite,    std::bind(&NodeCache::loadSprite,     this, _1)));
     _funcs.insert(Pair(ClassName_Particle,  std::bind(&NodeCache::loadParticle,   this, _1)));
 
+    _funcs.insert(Pair(ClassName_Panel,    std::bind(&NodeCache::loadWidget,   this, _1)));
     _funcs.insert(Pair(ClassName_Button,    std::bind(&NodeCache::loadWidget,   this, _1)));
     _funcs.insert(Pair(ClassName_CheckBox,  std::bind(&NodeCache::loadWidget,   this, _1)));
     _funcs.insert(Pair(ClassName_ImageView, std::bind(&NodeCache::loadWidget,   this, _1)));
@@ -391,6 +393,10 @@ Node* NodeCache::loadSimpleNode(const rapidjson::Value& json)
 cocos2d::Node* NodeCache::loadSubGraph(const rapidjson::Value& json)
 {
     const char* filePath = DICTOOL->getStringValue_json(json, FILE_PATH);
+    if (strcmp("", filePath) == 0)
+    {
+        return nullptr;
+    }
 
     Node* node = nullptr;
     if(filePath)
@@ -410,6 +416,10 @@ cocos2d::Node* NodeCache::loadSubGraph(const rapidjson::Value& json)
 Node* NodeCache::loadSprite(const rapidjson::Value& json)
 {
     const char* filePath = DICTOOL->getStringValue_json(json, FILE_PATH);
+    if (strcmp("", filePath) == 0)
+    {
+        return nullptr;
+    }
 
     Sprite *sprite = nullptr;
     SpriteFrame* spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(filePath);
