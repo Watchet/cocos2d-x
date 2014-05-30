@@ -60,6 +60,7 @@ static const char* NODE        = "nodeTree";
 static const char* CHILDREN    = "children";
 static const char* CLASSNAME   = "classname";
 static const char* FILE_PATH   = "filePath";
+static const char* PLIST_FILE  = "plistFile";
 static const char* ACTION_TAG  = "actionTag";
 
 static const char* OPTIONS     = "options";
@@ -79,9 +80,11 @@ static const char* ALPHA            = "opacity";
 static const char* RED              = "colorR";
 static const char* GREEN            = "colorG";
 static const char* BLUE             = "colorB";
+static const char* PARTICLE_NUM     = "particleNum";
     
 static const char* MULRESPOSITION              = "mulResPosition";
 static const char* POSITIONTYPE                = "positionType";
+static const char* MUL_POSITION                = "position";
 static const char* MUL_POSITIONX               = "x";
 static const char* MUL_POSITIONY               = "y";
 static const char* MUL_POSITIONPERCENTAGE      = "percentagepos";
@@ -207,7 +210,8 @@ cocos2d::Node* NodeCache::loadNode(const rapidjson::Value& json)
             cocos2d::Node* child = loadNode(dic);
             if (child) {
                 node->addChild(child);
-                locateNodeWithMulresPosition(child, dic);
+                const rapidjson::Value& options = DICTOOL->getSubDictionary_json(dic, OPTIONS);
+                locateNodeWithMulresPosition(child, options);
             }
         }
     }
@@ -227,7 +231,7 @@ void NodeCache::initNode(cocos2d::Node* node, const rapidjson::Value& json)
     float scaley        = DICTOOL->getFloatValue_json(json, SCALE_Y, 1);
     float rotation      = DICTOOL->getFloatValue_json(json, ROTATION);
     float rotationSkewX = DICTOOL->getFloatValue_json(json, ROTATION_SKEW_X);
-    float rotationSkewY = DICTOOL->getFloatValue_json(json, ROTATION_SKEW_X);
+    float rotationSkewY = DICTOOL->getFloatValue_json(json, ROTATION_SKEW_Y);
     float skewx         = DICTOOL->getFloatValue_json(json, SKEW_X);
     float skewy         = DICTOOL->getFloatValue_json(json, SKEW_Y);
     float anchorx       = DICTOOL->getFloatValue_json(json, ANCHOR_X, 0.5f);
@@ -266,13 +270,14 @@ void NodeCache::locateNodeWithMulresPosition(cocos2d::Node *node, const rapidjso
     const rapidjson::Value& mulInfo = DICTOOL->getSubDictionary_json(json, MULRESPOSITION);
     int positionType = DICTOOL->getIntValue_json(mulInfo, POSITIONTYPE);
     
-    Vector2 absPos;
+//    Vector2 absPos;
     switch (positionType)
     {
         case 0: //absolute
         {
-            float x = DICTOOL->getFloatValue_json(mulInfo, MUL_POSITIONX);
-            float y = DICTOOL->getFloatValue_json(mulInfo, MUL_POSITIONY);
+            const rapidjson::Value& position = DICTOOL->getSubDictionary_json(mulInfo, MUL_POSITION);
+            float x = DICTOOL->getFloatValue_json(position, MUL_POSITIONX);
+            float y = DICTOOL->getFloatValue_json(position, MUL_POSITIONY);
             node->setPosition(Vector2(x, y));
             break;
         }
@@ -371,7 +376,7 @@ void NodeCache::locateNodeWithMulresPosition(cocos2d::Node *node, const rapidjso
         default:
             break;
     }
-    node->setPosition(absPos);
+//    node->setPosition(absPos);
 }
 
 Node* NodeCache::loadSimpleNode(const rapidjson::Value& json)
@@ -426,7 +431,15 @@ Node* NodeCache::loadSprite(const rapidjson::Value& json)
 
 Node* NodeCache::loadParticle(const rapidjson::Value& json)
 {
-    return nullptr;
+    const char* filePath = DICTOOL->getStringValue_json(json, PLIST_FILE);
+    int num = DICTOOL->getIntValue_json(json, PARTICLE_NUM);
+
+    ParticleSystemQuad* particle = ParticleSystemQuad::create(filePath);
+    particle->setTotalParticles(num);
+
+    initNode(particle, json);
+
+    return particle;
 }
 
 cocos2d::Node* NodeCache::loadWidget(const rapidjson::Value& json)
