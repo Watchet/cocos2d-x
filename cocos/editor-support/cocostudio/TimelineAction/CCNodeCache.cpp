@@ -393,13 +393,9 @@ Node* NodeCache::loadSimpleNode(const rapidjson::Value& json)
 cocos2d::Node* NodeCache::loadSubGraph(const rapidjson::Value& json)
 {
     const char* filePath = DICTOOL->getStringValue_json(json, FILE_PATH);
-    if (strcmp("", filePath) == 0)
-    {
-        return nullptr;
-    }
 
     Node* node = nullptr;
-    if(filePath)
+    if (filePath && strcmp("", filePath) != 0)
     {
         node = createNode(filePath);
     }
@@ -433,7 +429,10 @@ Node* NodeCache::loadSprite(const rapidjson::Value& json)
     }
 
     if(!sprite)
-        CCLOG("create sprite with file name : %s  failed.", filePath);
+    {
+        sprite = CCSprite::create();
+        CCLOG("filePath is empty. Create a sprite with no texture");
+    }
 
     initNode(sprite, json);
 
