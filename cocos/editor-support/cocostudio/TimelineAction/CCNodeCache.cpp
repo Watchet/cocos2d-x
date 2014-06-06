@@ -66,6 +66,8 @@ static const char* ACTION_TAG  = "actionTag";
 
 static const char* OPTIONS     = "options";
 
+static const char* WIDTH            = "width";
+static const char* HEIGHT           = "height";
 static const char* X                = "x";
 static const char* Y                = "y";
 static const char* SCALE_X          = "scaleX";
@@ -227,6 +229,8 @@ cocos2d::Node* NodeCache::loadNode(const rapidjson::Value& json)
 
 void NodeCache::initNode(cocos2d::Node* node, const rapidjson::Value& json)
 {
+    float width         = DICTOOL->getFloatValue_json(json, WIDTH);
+    float height        = DICTOOL->getFloatValue_json(json, HEIGHT);
     float x             = DICTOOL->getFloatValue_json(json, X);
     float y             = DICTOOL->getFloatValue_json(json, Y);
     float scalex        = DICTOOL->getFloatValue_json(json, SCALE_X, 1);
@@ -243,28 +247,19 @@ void NodeCache::initNode(cocos2d::Node* node, const rapidjson::Value& json)
     GLubyte green       = (GLubyte)DICTOOL->getIntValue_json(json, GREEN, 255);
     GLubyte blue        = (GLubyte)DICTOOL->getIntValue_json(json, BLUE, 255);
 
-    if(x != 0 || y != 0)
-        node->setPosition(x, y);
-    if(scalex != 1)
-        node->setScaleX(scalex);
-    if(scaley != 1)
-        node->setScaleY(scaley);
-    if (rotation != 0)
-        node->setRotation(rotation);
-    if(rotationSkewX != 0)
-        node->setRotationSkewX(rotationSkewX);
-    if(rotationSkewY != 0)
-        node->setRotationSkewY(rotationSkewY);
-    if(skewx != 0)
-        node->setSkewX(skewx);
-    if(skewy != 0)
-        node->setSkewY(skewy);
-    if(anchorx != 0.5f || anchory != 0.5f)
-        node->setAnchorPoint(Vec2(anchorx, anchory));
-    if(alpha != 255)
-        node->setOpacity(alpha); node->setCascadeOpacityEnabled(true);
-    if(red != 255 || green != 255 || blue != 255)
-        node->setColor(Color3B(red, green, blue));
+    
+    node->setContentSize(Size(width, height));
+    node->setPosition(x, y);
+    node->setScaleX(scalex);
+    node->setScaleY(scaley);
+    node->setRotation(rotation);
+    node->setRotationSkewX(rotationSkewX);
+    node->setRotationSkewY(rotationSkewY);
+    node->setSkewX(skewx);
+    node->setSkewY(skewy);
+    node->setAnchorPoint(Vec2(anchorx, anchory));
+    node->setOpacity(alpha); node->setCascadeOpacityEnabled(true);
+    node->setColor(Color3B(red, green, blue));
 }
     
 void NodeCache::locateNodeWithMulresPosition(cocos2d::Node *node, const rapidjson::Value &json)
